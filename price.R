@@ -25,3 +25,22 @@ mhattan <- rename(mhatta, neighbd = NEIGHBORHOOD, tclass_present = TAX.CLASS.AT.
                   gross_ft = GROSS.SQUARE.FEET, year_built = YEAR.BUILT, tclass_sale = TAX.CLASS.AT.TIME.OF.SALE, 
                   bclass_sale = BUILDING.CLASS.AT.TIME.OF.SALE ,sale_price = SALE.PRICE ,sale_date = SALE.DATE)
 
+# change column data types to their actual types
+mhattan_c <- transmute(mhattan,
+                       neighbd,
+                       tclass_present,
+                       block,
+                       bclass_present,
+                       zip,
+                       res_units,
+                       com_units,
+                       total_units,
+                       land_ft = parse_number(mhattan$land_ft),
+                       gross_ft = parse_number(mhattan$gross_ft),
+                       year_built,
+                       tclass_sale = parse_factor(mhattan$tclass_sale,levels = c(1,2,3,4)),
+                       bclass_sale,
+                       sale_price = parse_number(mhattan$sale_price),
+                       sale_date = parse_date(mhattan$sale_date, "%m/%d/%y")
+)
+str(mhattan_c)
