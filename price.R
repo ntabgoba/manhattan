@@ -44,3 +44,14 @@ mhattan_c <- transmute(mhattan,
                        sale_date = parse_date(mhattan$sale_date, "%m/%d/%y")
 )
 str(mhattan_c)
+
+
+
+max(mhattan_c$year_built)
+min(mhattan_c$year_built)
+# EXPLORATORY.
+# year vs houses
+ggplot(data = mhattan_c) +
+        geom_bar( mapping = aes(x = year_built,fill = neighbd,size=5,na.rm = TRUE)) +
+        coord_cartesian(xlim = c(1900,2011))
+# total_units sold per year of built, at each tclass_sale
