@@ -81,3 +81,12 @@ ggplot(data = mhattan_ga) +
         geom_point(mapping = aes(x = log(gross_ft),y = log(sale_price),color = neighbd, position = "jitter", na.rm = TRUE)) +
         geom_smooth()
 # Selling periods
+ggplot(data = mhattan_ga) +
+        geom_point(mapping = aes(x = sale_date, y = sale_price/10000, na.rm = TRUE))
+
+# MODEL APPLICATION
+# Features to look at Sale_Price, Gross_ft, sale_date, year_built, neighbd
+# Split into trainig and test data sets
+# Try Multiple regression and Random Forests
+
+# CONCLUSION
