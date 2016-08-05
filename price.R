@@ -74,3 +74,10 @@ ggplot(data = mhattan_ga) +
         geom_point(mapping = aes(x = gross_ft/100,y = sale_price/1000,color = neighbd, position = "jitter", na.rm = TRUE))+
         coord_cartesian(xlim = c(100,3000), ylim = c(100, 150000)) # Cut out over $100M units
 #Try log (excite yourself!)
+ggplot(data = mhattan_ga) +
+        geom_point(mapping = aes(x = log(gross_ft/100),y = log(sale_price/1000),color = neighbd, position = "jitter", na.rm = TRUE))
+
+ggplot(data = mhattan_ga) +
+        geom_point(mapping = aes(x = log(gross_ft),y = log(sale_price),color = neighbd, position = "jitter", na.rm = TRUE)) +
+        geom_smooth()
+# Selling periods
