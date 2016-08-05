@@ -66,3 +66,11 @@ ggplot(data = mhattan_cr, mapping = aes(x = res_units, y = com_units, color = tc
         geom_point(position = "jitter") +
         geom_smooth(se = TRUE, color = "yellow") +
         ggtitle("Commercial compared to Residential units, per Tax Class at Sale")
+# relationship between price and gross area
+max(mhattan_c$sale_price)
+mhattan_ga <- mhattan_c  %>%
+        filter(sale_price >= 1000 & sale_price < 1000000000, gross_ft >=10) #Evict a $1.76Billion unit
+ggplot(data = mhattan_ga) +
+        geom_point(mapping = aes(x = gross_ft/100,y = sale_price/1000,color = neighbd, position = "jitter", na.rm = TRUE))+
+        coord_cartesian(xlim = c(100,3000), ylim = c(100, 150000)) # Cut out over $100M units
+#Try log (excite yourself!)
