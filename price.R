@@ -55,3 +55,14 @@ ggplot(data = mhattan_c) +
         geom_bar( mapping = aes(x = year_built,fill = neighbd,size=5,na.rm = TRUE)) +
         coord_cartesian(xlim = c(1900,2011))
 # total_units sold per year of built, at each tclass_sale
+ggplot(data = mhattan_c) +
+        geom_bar(mapping = aes(x = year_built, y = total_units,fill = tclass_sale), stat = "identity")+
+        coord_cartesian(xlim = c(1900,2011))
+# commercial vs residential 
+#Between commercial and residential which were mostly speculated and later sold?
+mhattan_cr <- mhattan_c  %>%
+        filter(res_units >= 1 & res_units < 150,com_units >=1) 
+ggplot(data = mhattan_cr, mapping = aes(x = res_units, y = com_units, color = tclass_sale),na.rm = TRUE) +
+        geom_point(position = "jitter") +
+        geom_smooth(se = TRUE, color = "yellow") +
+        ggtitle("Commercial compared to Residential units, per Tax Class at Sale")
