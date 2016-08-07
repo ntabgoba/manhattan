@@ -1,0 +1,50 @@
+---
+author: "Jovani Ntabgoba"
+date: "May 9, 2016"
+output: html_document
+---
+# What happened after the 2008 US housing bubble? (a casestudy of Manhattan in 2009).
+
+Stories about the 2008 Financial Crisis often mention which banks and companies that became bankrupt and people who lost jobs and homes. However, little is mentioned of what profits were made after,just after. This analysis explores a data set that contains 18673 houses sold in Manhattan between January 2009 to December 2009. The dataset is available at  [NYC Website](www1.nyc.gov/assets/finance/downloads/.../2009_manhattan.xls)
+
+## 1.DATA LOADING & CLEANING
+
+#### (i) Loading required packages/libraries
+```{r,warning=FALSE,message=FALSE}
+# Set working dir and input data
+setwd("/Users/ntabgoba/Desktop/manhatta")
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(caret)
+library(doMC)
+library(knitr)
+mhattan <- read.csv("2009_manhattan.csv",header = TRUE, skip = 4)
+dim(mhattan)
+head(mhattan,2)
+mhattan <- as_data_frame(mhattan)
+```
+
+#### (ii) Data clearning and wrangling/munging
+```{r}
+# Select columns relevant to analysis
+mhatta <- select(mhattan, NEIGHBORHOOD, TAX.CLASS.AT.PRESENT, BLOCK, BUILDING.CLASS.AT.PRESENT, ZIP.CODE,
+                 RESIDENTIAL.UNITS, COMMERCIAL.UNITS, TOTAL.UNITS, LAND.SQUARE.FEET, GROSS.SQUARE.FEET, 
+                 YEAR.BUILT, TAX.CLASS.AT.TIME.OF.SALE, BUILDING.CLASS.AT.TIME.OF.SALE, SALE.PRICE, SALE.DATE)
+```
+
+```{r}
+# Rename the columns
+mhatt <- rename(mhatta, neighbd = NEIGHBORHOOD, tclass_present = TAX.CLASS.AT.PRESENT, block = BLOCK , 
+                  bclass_present = BUILDING.CLASS.AT.PRESENT,  zip = ZIP.CODE, res_units = RESIDENTIAL.UNITS,
+                  com_units = COMMERCIAL.UNITS ,total_units = TOTAL.UNITS, land_ft = LAND.SQUARE.FEET, 
+                  gross_ft = GROSS.SQUARE.FEET, year_built = YEAR.BUILT, tclass_sale = TAX.CLASS.AT.TIME.OF.SALE, 
+                  bclass_sale = BUILDING.CLASS.AT.TIME.OF.SALE ,sale_price = SALE.PRICE ,sale_date = SALE.DATE)
+```
+
+        * After selecting the variables that are relevant to the analysis. We proceed to rename columns to shorter and easily programmeable wording.
+        * We also change data types of price to numbers, tax to factors and date to date. R had previously automatically read price,tax and date as characters/strings.
+        * We also add new variables that are a function of existing variables.
+
+
+
