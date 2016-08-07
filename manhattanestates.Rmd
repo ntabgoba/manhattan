@@ -119,3 +119,72 @@ ggplot(data = mha) +
 ```
 
 > Due to too much information in the plot, there is less we can discover from above graph 3.
+
+#### Relation of sales and period
+```{r,warning=FALSE,message=FALSE, fig.width=7,fig.height=5}
+monthly <- mha %>%
+        group_by(sale_date) %>%
+        summarise(n = n())
+ggplot(monthly, aes(sale_date, n))+
+        geom_line()
+```
+From above graph 4, 
+        - We discover that volume of house sales, varies weekly due to weekends (may be).
+        - We also realise that there was an upward increase in the volume of sales from Jan 2009 towards peak in Jan 2010.
+*NB:* Above graphs are simply exploratory analysis which helps us understand the data we are dealing with.
+
+## MODEL APPLICATION
+Model application is a process of trying to quantify the relationship between a variable of interest (predicted) versus other variable(s) known as predictors.
+#### Features to look at Sale_Price, Gross_ft, sale_date, year_built, neighbd, res_units
+```{r}
+mha_model <- select(mha,neighbd,res_units, year_built, sale_price, gross_ft, sale_date)%>%
+        filter(res_units >= 1, gross_ft >= 1)%>%
+        mutate(price_per_resUnit = sale_price/res_units,
+                  sqFt_per_resUnit = gross_ft/res_units)
+```
+
+#### Split into trainig and test data sets
+```{r}
+class(mha_model)
+mha_mod <- as.data.frame(mha_model)
+class(mha_mod)
+inTrain <- createDataPartition(y=mha_mod$price_per_resUnit, p=0.7, list = FALSE)
+training <- mha_mod[inTrain,]
+testing <- mha_mod[-inTrain,]
+rbind("original data" = dim(mha_mod), "training data" = dim(training), "testing data" = dim(testing))
+```
+Above is the original data split into training and testing datasets.
+
+```{r}
+# From exploratory analysis, year and total square foot of a unit are correlated to the price of a unit.
+cor(training$price_per_resUnit, training$sqFt_per_resUnit, use = "na")
+cor(training$price_per_resUnit,training$year_built, use = "na")
+```
+>       Price of a unit and Gross sqaure foot of a unit is highly correlated (0.7) and less correlated (0.0047) with the year which a unit was built.
+We use both year built and gross square foot to predict the price of unit house.
+
+#### Univariate linear regression
+```{r}
+fit1 <- lm(training$price_per_resUnit ~ training$sqFt_per_resUnit)
+summary(fit1)
+```
+
+```{r,warning=FALSE,message=FALSE,fig.width=2, fig.height=3,echo=FALSE}
+plot(fit1)
+```
+
+#### Multivariate linear regression
+```{r, fig.align="center"}
+fit11 <- lm(price_per_resUnit ~ sqFt_per_resUnit + year_built, data = training)
+summary(fit11)
+```
+
+```{r,warning=FALSE,message=FALSE,fig.width=2, fig.height=3,echo=FALSE,out.extra='style="float:left"'}
+plot(fit11)
+```
+#### Random Forest
+
+To be continued.....
+
+END.
+
