@@ -46,5 +46,76 @@ mhatt <- rename(mhatta, neighbd = NEIGHBORHOOD, tclass_present = TAX.CLASS.AT.PR
         * We also change data types of price to numbers, tax to factors and date to date. R had previously automatically read price,tax and date as characters/strings.
         * We also add new variables that are a function of existing variables.
 
+```{r}
+# change column data types to their actual types
+mhat <- transmute(mhatt,
+                  neighbd,
+                  tclass_present,
+                  block,
+                  bclass_present,
+                  zip,
+                  res_units,
+                  com_units,
+                  total_units,
+                  land_ft = parse_number(mhatt$land_ft),
+                  gross_ft = parse_number(mhatt$gross_ft),
+                  year_built,
+                  tclass_sale = parse_factor(mhatt$tclass_sale,levels = c(1,2,3,4)),
+                  bclass_sale,
+                  sale_price = parse_number(mhatt$sale_price),
+                  sale_date = parse_date(mhatt$sale_date, "%m/%d/%y")
+)
+```
 
 
+## EXPLORATORY.
+```{r}
+max(mhat$year_built)
+min(mhat$year_built)
+```
+
+#### Age and neighborhood of most sold houses
+```{r,warning=FALSE,message=FALSE, fig.width=13,fig.height=8}
+ggplot(data = mhat) +
+        geom_bar( mapping = aes(x = year_built,fill = neighbd,size=5,na.rm = TRUE)) +
+        coord_cartesian(xlim = c(1900,2011)) +
+        ggtitle("Age and Neighborhood of sold houses")
+```
+Interestingly from the above graph 1, we see;
+        - Houses built around 2007 were sold 3 times more than any other houses built in different periods.
+        - Most of all other peaks of sales are also houses that were built during years that appear on the previous US Housing bubble timeline. Interesting this could draw us to conclude that the 2008 crisis, was also partly due to an aggregated aftershocks of speculated houses that were built due to incentives rather than pure demand and supply as depicted in below timeline.
+```{r, out.width = 400, fig.retina = NULL}
+knitr::include_graphics("bubble.png")
+```
+        
+#### Commercial vs Residential 
+We investigate to see if as more residential(_expenditure_) houses increased, did commercial houses(_production_) increase in commensurate.
+```{r,warning=FALSE,message=FALSE, fig.width=13,fig.height=8}
+mha <- mhat  %>%
+        filter(res_units >= 1 & res_units < 150,com_units >=1) 
+ggplot(data = mha, mapping = aes(x = res_units, y = com_units, color = tclass_sale),na.rm = TRUE) +
+        geom_point(position = "jitter") +
+        geom_smooth(se = TRUE, color = "yellow") +
+        ggtitle("Commercial compared to Residential units, per Tax Class at Sale") +
+        facet_wrap(~neighbd)
+```
+
+>       From graph 2 above, we realise that;
+        - More and more residential houses were built, while very few commercial houses were built.
+        - Apartments and Condomiums that have more than 3 units were mainly built. Tax Class of sale 2 in green colour.
+        - Upper East Side and West, Chelsea, East Village, Harlem-Central and Little Italy saw most of the sales. 
+Interestingly the above layout has a relationship to this map of Manhattan's population during day & night.![Manhattan Day&Night's population,source:joelertola.com](popn.jpg)
+
+#### Relationship between price and gross area
+```{r,warning=FALSE,message=FALSE, fig.width=13,fig.height=8}
+# Filter out a $1.76Billion unit and freely offered apartments
+max(mhat$sale_price)
+mha <- mhat  %>%
+        filter(sale_price >= 1000 & sale_price < 1000000000, gross_ft >=10) 
+ggplot(data = mha) +
+        geom_point(mapping = aes(x = gross_ft/100,y = sale_price/1000,color = neighbd, position = "jitter", na.rm = TRUE))+
+        ggtitle("Sale Price of house versus Gross Square Foot of house") +
+        coord_cartesian(xlim = c(100,3000), ylim = c(100, 150000)) # Cut out over $100M units
+```
+
+> Due to too much information in the plot, there is less we can discover from above graph 3.
