@@ -34,4 +34,18 @@ fit3$coefficients
 fit4 <- lm(Market.Value.per.SqFt ~ Building.Classification*Boro, data1)
 fit4$coefficients
 
+#calculate their ration
+fit5 <- lm(Market.Value.per.SqFt ~ I(Gross.SqFt/Total.Units) + Boro, data1)
+fit5$coefficients
 
+fit6 <- lm(Market.Value.per.SqFt ~ (Gross.SqFt + Total.Units)^2, data1)
+fit6$coefficients
+
+fit7 <- lm(Market.Value.per.SqFt ~ Total.Units*Gross.SqFt, data1)
+fit7$coefficients
+multiplot(fit,fit2,fit3)
+#you model does not fit, always check them against prediction intervals
+datapre <- read_csv("http://www.jaredlander.com/data/housing.csv")
+
+fitpredict <- predict(fit2, newdata=datapre, se.fit = TRUE, interval = "prediction", level=0.95)
+head(fitpredict$fit)
