@@ -156,4 +156,29 @@ tidy(l)
 tidy(h)
 glance(h)
 
+# Multiple regression
+
+multi <- lm(res_unit_price ~ res_unit_grossft + year_built, data = price_ft)
+multi2 <- lm(res_unit_price ~ res_unit_grossft, data = price_ft)
+summary(multi2)
+plot(multi2)
+res_res <- resid(multi2)
+ggplot(price_ft, aes(res_unit_price, res_res)) +
+        geom_line()
+
+
+
+#trace any variability in number of tradings per days
+monthly <- training %>%
+        group_by(sale_date) %>%
+        summarise(n = n())
+ggplot(monthly, aes(sale_date, n))+
+        geom_line()
+#weekdays
+monthly <- monthly %>%
+        mutate(wday = wday(monthly, label = TRUE))
+ggplot(monthly, aes(wday, n)) + 
+        geom_boxplot()
+
+?datetime
 
